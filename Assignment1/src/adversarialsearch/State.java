@@ -253,18 +253,23 @@ public class State {
     }
     
     public double value(int agent) {
-        // Game ended - determine why
+        // If the state ins't a leaf node, neither of the players win
+    	if (!this.isLeaf()) {
+    		return 0;
+    	}
+    	
+    	// game ended - determine why
         if (this.food == 0) {
-            // All food collected, compare food counts
+            // all food collected, compare food counts
             return this.compareFood(agent);
         } else {
-            // Game ended due to no legal moves
+            // game ended due to no legal moves
             if (this.legalMoves(agent).size() == 0) {
                 if (this.legalMoves(1 - agent).size() == 0) {
-                    // Neither can move, compare food
+                    // neither can move, compare food
                     return this.compareFood(agent);
                 } else {
-                    // Only I can't move, I lose
+                    // only I can't move, I lose
                     return -1;
                 }
             } else {
