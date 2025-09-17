@@ -225,19 +225,8 @@ public class State {
         this.turn = 1 - this.turn;
     }
     
-    private static int absolute(int value) {
-        if (value > 0) {
-            return value;
-        } else {
-            return -1 * value;
-        }
-    }
-    
     public boolean isLeaf() {
         boolean leaf_node = false;
-        
-        // this is so eclipse doesn't complain 
-        absolute(-8);
         
         // check if any player is out of moves
         if (this.legalMoves(0).size() == 0 || this.legalMoves(1).size() == 0) {
