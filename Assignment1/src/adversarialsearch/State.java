@@ -128,6 +128,12 @@ public class State {
         for (int i = 0; i < numAgents; i++) {
             newState.score[i] = this.score[i];
         }
+        
+        // copy the move history
+        newState.moves = new Vector<String>();
+        for (String move : this.moves) {
+            newState.moves.add(move);
+        }
 
         // copy primitive types
         newState.turn = this.turn;
