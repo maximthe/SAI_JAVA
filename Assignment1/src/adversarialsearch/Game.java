@@ -43,6 +43,12 @@ public class Game {
 	    			bestValue = branchValue;
 	    			bestState = candidate.copy();
 	    		}
+	    		
+	    		// Prefer solutions with less moves
+	    		if (candidate.moves.size() < bestState.moves.size() && branchValue >= bestValue) {
+	    			bestValue = branchValue;
+	    			bestState = candidate.copy();
+	    		}
 	    	}
 	    } else {
 	    	// if it is not our move we look for the minimum with respect to our agent
@@ -61,6 +67,12 @@ public class Game {
 	    		
 	    		// If the branch value better than what we found so far, set the bestValue and bestState
 	    		if (branchValue < bestValue) {
+	    			bestValue = branchValue;
+	    			bestState = candidate.copy();
+	    		}
+	    		
+	    		// Prefer solutions with less moves
+	    		if (candidate.moves.size() < bestState.moves.size() && branchValue >= bestValue) {
 	    			bestValue = branchValue;
 	    			bestState = candidate.copy();
 	    		}
