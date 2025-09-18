@@ -6,10 +6,10 @@ public class Game {
 	State b;
 	public Game() {
 		b=new State();
-		b.read("data/big_board.txt");
+		b.read("data/board.txt");
 	}
 	public void test() {
-		State endState = minimax(b, b.turn, 10, 0);
+		State endState = minimax(b, b.turn, 13, 0);
 		this.replayStepByStep(b, endState.moves);
 	}
 	
@@ -72,7 +72,7 @@ public class Game {
 	    		}
 	    		
 	    		// Prefer solutions with less moves
-	    		if (candidate.moves.size() < bestState.moves.size() && branchValue >= bestValue) {
+	    		if (candidate.moves.size() < bestState.moves.size() && branchValue < bestValue) {
 	    			bestValue = branchValue;
 	    			bestState = candidate.copy();
 	    		}
