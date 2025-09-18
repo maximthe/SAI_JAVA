@@ -6,7 +6,7 @@ public class Game {
 	State b;
 	public Game() {
 		b=new State();
-		b.read("data/board.txt");
+		b.read("data/big_board.txt");
 	}
 	public void test() {
 		State endState = minimax(b, b.turn, 13, 0);
