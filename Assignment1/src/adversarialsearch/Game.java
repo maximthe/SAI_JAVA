@@ -6,13 +6,11 @@ public class Game {
 	State b;
 	public Game() {
 		b=new State();
-		b.read("data/immidiate_win_A.txt");
+		b.read("data/big_board.txt");
 	}
 	public void test() {
-
-		State endState = minimax(b, b.turn, 20, 0);
+		State endState = minimax(b, b.turn, 10, 0);
 		this.replayStepByStep(b, endState.moves);
-		
 	}
 	
 	public State minimax(State s, int forAgent, int maxDepth, int depth) {
@@ -27,42 +25,9 @@ public class Game {
 	    
 	    // If it is our turn, take the moves and find the maximum
 	    if (s.turn == forAgent) {
-
-	        double bestValue = Double.NEGATIVE_INFINITY;
-
-	        for (String move : s.legalMoves()) {
-	            State nextState = s.copy();
-	            nextState.execute(move);
-
-	            State candidate = minimax(nextState, forAgent, maxDepth, depth + 1);
-	            double branchValue = candidate.value(forAgent);
-
-	            if (branchValue > bestValue) {
-	                bestValue = branchValue;
-	                bestState = candidate;
-	            }
-	        }
-	    } else {
-	        double bestValue = Double.POSITIVE_INFINITY;
-
-	        for (String move : s.legalMoves()) {
-	            State nextState = s.copy();
-	            nextState.execute(move);
-
-	            State candidate = minimax(nextState, forAgent, maxDepth, depth + 1);
-	            double branchValue = candidate.value(forAgent);
-
-	            if (branchValue < bestValue) {
-	                bestValue = branchValue;
-	                bestState = candidate;
-	            }
-	        }
-=======
-	    	
 	    	double bestValue = Double.NEGATIVE_INFINITY;
 	    	
 	    	for (String move: s.legalMoves()) {
-	    		
 	    		// Make a copy of the state for after the move
 	    		State nextState = s.copy();
 	    		
@@ -79,14 +44,11 @@ public class Game {
 	    			bestState = candidate.copy();
 	    		}
 	    	}
-	    	
 	    } else {
-	    	
 	    	// if it is not our move we look for the minimum with respect to our agent
 	    	double bestValue = Double.POSITIVE_INFINITY;
 	    	
 	    	for (String move: s.legalMoves()) {
-	    		
 	    		// Make a copy of the state for after the move
 	    		State nextState = s.copy();
 	    		
@@ -103,7 +65,6 @@ public class Game {
 	    			bestState = candidate.copy();
 	    		}
 	    	}
-	    	
 	    }
 	    
 	    return bestState;

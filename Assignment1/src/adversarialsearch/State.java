@@ -155,11 +155,6 @@ public class State {
             output.add("eat");
         }
 
-        // examine if an agent can drop a block
-        if (board[agentY][agentX] == ' ') {
-            output.add("block");
-        }
-
         // check if we can go either of the 4 directions
         if (board[agentY + 1][agentX] != '#') {
             output.add("down");
@@ -172,6 +167,11 @@ public class State {
         }
         if (board[agentY][agentX - 1] != '#') {
             output.add("left");
+        }
+        
+     // examine if an agent can drop a block
+        if (board[agentY][agentX] == ' ') {
+            output.add("block");
         }
 
         return output;
