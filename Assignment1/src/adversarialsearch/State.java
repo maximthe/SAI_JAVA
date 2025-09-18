@@ -239,7 +239,7 @@ public class State {
             leaf_node = true;
         }
         
-        // I wanted to use the Math.abs() but I don't think were allowed imports -> oh, turns out we stop when food is equal to 0
+        // check if there is food left on the board
         if (this.food == 0) {
             leaf_node = true;
         }

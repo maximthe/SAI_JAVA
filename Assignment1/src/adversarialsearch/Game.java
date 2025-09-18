@@ -6,27 +6,28 @@ public class Game {
 	State b;
 	public Game() {
 		b=new State();
-		b.read("data/almost_win.txt");
+		b.read("data/immidiate_win_A.txt");
 	}
 	public void test() {
-		
-		System.out.println(b);
-		
-		State endState = minimax(b, b.turn, 13, 0);
-		
+
+		State endState = minimax(b, b.turn, 20, 0);
 		this.replayStepByStep(b, endState.moves);
+		
 	}
 	
 	public State minimax(State s, int forAgent, int maxDepth, int depth) {
-		
-	    // if we hit the depth limit or leaf node, return the state
+
+	    // Base case: depth limit or leaf node
 	    if (depth >= maxDepth || s.isLeaf()) {
 	        return s;
 	    }
 
+	    // Recursive step: check the resulting value of every possible next branch state
 	    State bestState = null;
-
+	    
+	    // If it is our turn, take the moves and find the maximum
 	    if (s.turn == forAgent) {
+
 	        double bestValue = Double.NEGATIVE_INFINITY;
 
 	        for (String move : s.legalMoves()) {
@@ -56,10 +57,59 @@ public class Game {
 	                bestState = candidate;
 	            }
 	        }
+=======
+	    	
+	    	double bestValue = Double.NEGATIVE_INFINITY;
+	    	
+	    	for (String move: s.legalMoves()) {
+	    		
+	    		// Make a copy of the state for after the move
+	    		State nextState = s.copy();
+	    		
+	    		// Make the move
+	    		nextState.execute(move);
+	    		
+	    		// For this branch, find the value of the resulting best state and find the maximum
+	    		State candidate = minimax(nextState, forAgent, maxDepth, depth + 1);
+	    		double branchValue = candidate.value(forAgent);
+	    		
+	    		// If the branch value better than what we found so far, set the bestValue and bestState
+	    		if (branchValue > bestValue) {
+	    			bestValue = branchValue;
+	    			bestState = candidate.copy();
+	    		}
+	    	}
+	    	
+	    } else {
+	    	
+	    	// if it is not our move we look for the minimum with respect to our agent
+	    	double bestValue = Double.POSITIVE_INFINITY;
+	    	
+	    	for (String move: s.legalMoves()) {
+	    		
+	    		// Make a copy of the state for after the move
+	    		State nextState = s.copy();
+	    		
+	    		// Make the move
+	    		nextState.execute(move);
+	    		
+	    		// For this branch, find the value of the resulting best state and find the minimum
+	    		State candidate = minimax(nextState, forAgent, maxDepth, depth + 1);
+	    		double branchValue = candidate.value(forAgent);
+	    		
+	    		// If the branch value better than what we found so far, set the bestValue and bestState
+	    		if (branchValue < bestValue) {
+	    			bestValue = branchValue;
+	    			bestState = candidate.copy();
+	    		}
+	    	}
+	    	
 	    }
-
+	    
 	    return bestState;
 	}
+
+
 	
 	public void replayStepByStep(State initialState, Vector<String> moveHistory) {
 	    // Copy the initial state to avoid modifying the original
@@ -73,8 +123,37 @@ public class Game {
 	        int currentPlayer = current.turn;  // Player making the move
 	        current.execute(move);
 	        printStep(current, currentPlayer, move, i + 1);
+
+	        // If the game ended at this step, stop replaying further moves
+	        if (current.isLeaf()) {
+	            System.out.println("Game ended at step " + (i + 1) + ".\n");
+	            break;
+	        }
+	    }
+
+	    // After all moves (or early termination), determine and print the result
+	    if (current.isLeaf()) {
+	        double valA = current.value(0); // perspective of A
+	        if (valA == 1.0) {
+	            System.out.println("Result: A wins.");
+	        } else if (valA == -1.0) {
+	            System.out.println("Result: B wins.");
+	        } else {
+	            System.out.println("Result: Tie.");
+	        }
+	    } else {
+	        System.out.println("Result: Game not finished (non-terminal).");
+	        // optional: show current leader by score
+	        if (current.score[0] > current.score[1]) {
+	            System.out.println("Current leader: A (score " + current.score[0] + " - " + current.score[1] + ")");
+	        } else if (current.score[0] < current.score[1]) {
+	            System.out.println("Current leader: B (score " + current.score[1] + " - " + current.score[0] + ")");
+	        } else {
+	            System.out.println("Score tied: " + current.score[0] + " - " + current.score[1]);
+	        }
 	    }
 	}
+
 
 	// Helper method to print state info with current move
 	private void printStep(State s, int player, String move, int stepNumber) {
