@@ -3,17 +3,49 @@ package adversarialsearch;
 import java.util.Vector;
 
 public class Game {
+	
+	public int nodesVisited = 0;
+	
 	State b;
 	public Game() {
 		b=new State();
-		b.read("data/big_board.txt");
+		b.read("data/board.txt");
 	}
 	public void test() {
 		State endState = minimax(b, b.turn, 13, 0);
 		this.replayStepByStep(b, endState.moves);
+		
+		for (int i=3; i<=13; i++) {
+			System.out.println("Depth reached: " + i);
+			State endMinMaxState = BestWithMinimax(b, b.turn, i);
+			System.out.println("Minimax values");
+			System.out.println("Final state reached: " + endMinMaxState);
+			System.out.println("Nodes visited to reach this state: " + this.nodesVisited + '\n');
+			
+			State endABState = BestWithAlphaBeta(b, b.turn, i);
+			System.out.println("Alpha-beta values");
+			System.out.println("Final state reached: " + endABState);
+			System.out.println("Nodes visited to reach this state: " + this.nodesVisited + '\n');
+		}
+		
+		
 	}
 	
+	// function to easily reset value of nodesVisited for minimax
+	public State BestWithMinimax(State root, int forAgent, int maxDepth) {
+        nodesVisited = 0;
+        return minimax(root, forAgent, maxDepth, 0);
+    }
+	
+	// function to easily reset value of nodesVisited for alpha_beta
+    public State BestWithAlphaBeta(State root, int forAgent, int maxDepth) {
+        nodesVisited = 0;
+        return alpha_beta(root, forAgent, maxDepth, 0, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+    }
+    
 	public State minimax(State s, int forAgent, int maxDepth, int depth) {
+		// Incrementing the nodes count for every not-pruned node
+		nodesVisited++;
 
 	    // Base case: depth limit or leaf node
 	    if (depth >= maxDepth || s.isLeaf()) {
@@ -75,6 +107,91 @@ public class Game {
 	    		if (candidate.moves.size() < bestState.moves.size() && branchValue < bestValue) {
 	    			bestValue = branchValue;
 	    			bestState = candidate.copy();
+	    		}
+	    	}
+	    }
+	    
+	    return bestState;
+	}
+	
+	public State alpha_beta(State s, int forAgent, int maxDepth, int depth, double alpha, double beta) {
+		// alpha goes from Double.NEGATIVE_INFINITY
+		// beta goes from Double.POSITIVE_INFINITY
+		
+		// Incrementing the nodes count for every not-pruned node
+		nodesVisited++;
+		
+	    // Base case: depth limit or leaf node
+	    if (depth >= maxDepth || s.isLeaf()) {
+	        return s;
+	    }
+
+	    // Recursive step: check the resulting value of every possible next branch state
+	    State bestState = null;
+	    
+	    // If it is our turn, take the moves and find the maximum
+	    if (s.turn == forAgent) {
+	    	double bestValue = Double.NEGATIVE_INFINITY;
+	    	
+	    	for (String move: s.legalMoves()) {
+	    		// Make a copy of the state for after the move
+	    		State nextState = s.copy();
+	    		
+	    		// Make the move
+	    		nextState.execute(move);
+	    		
+	    		// For this branch, find the value of the resulting best state and find the maximum
+	    		State candidate = alpha_beta(nextState, forAgent, maxDepth, depth + 1, alpha, beta);
+	    		double branchValue = candidate.value(forAgent);
+	    		
+	    		// If the branch value better than what we found so far, set the bestValue and bestState
+	    		if (branchValue > bestValue) {
+	    			bestValue = branchValue;
+	    			bestState = candidate.copy();
+	    		}
+	    		
+	    		// Prefer solutions with less moves
+	    		if (candidate.moves.size() < bestState.moves.size() && branchValue >= bestValue) {
+	    			bestValue = branchValue;
+	    			bestState = candidate.copy();
+	    		}
+	    		
+	    		alpha = Math.max(alpha, bestValue);
+	    		if (alpha >= beta) {
+	    			// Breaks to the final bestState
+	    			break;
+	    		}
+	    	}
+	    } else {
+	    	// if it is not our move we look for the minimum with respect to our agent
+	    	double bestValue = Double.POSITIVE_INFINITY;
+	    	
+	    	for (String move: s.legalMoves()) {
+	    		// Make a copy of the state for after the move
+	    		State nextState = s.copy();
+	    		
+	    		// Make the move
+	    		nextState.execute(move);
+	    		
+	    		// For this branch, find the value of the resulting best state and find the minimum
+	    		State candidate = alpha_beta(nextState, forAgent, maxDepth, depth + 1, alpha, beta);
+	    		double branchValue = candidate.value(forAgent);
+	    		
+	    		// If the branch value better than what we found so far, set the bestValue and bestState
+	    		if (branchValue < bestValue) {
+	    			bestValue = branchValue;
+	    			bestState = candidate.copy();
+	    		}
+	    		
+	    		// Prefer solutions with less moves
+	    		if (candidate.moves.size() < bestState.moves.size() && branchValue < bestValue) {
+	    			bestValue = branchValue;
+	    			bestState = candidate.copy();
+	    		}
+	    		
+	    		beta = Math.min(beta, bestValue);
+	    		if (beta <= alpha) {
+	    			break;
 	    		}
 	    	}
 	    }
