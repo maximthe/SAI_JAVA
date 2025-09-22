@@ -12,19 +12,32 @@ public class Game {
 		b.read("data/board.txt");
 	}
 	public void test() {
-		State endState = minimax(b, b.turn, 13, 0);
-		this.replayStepByStep(b, endState.moves);
+//		State endState = minimax(b, b.turn, 13, 0);
+//		this.replayStepByStep(b, endState.moves);
+		
+		
+		// At depth 11 A finds a guaranteed winning combination, before that, the depth is not enough so the steps are kind of meh
+		
+		for (int i=7; i<=13; i++) {
+			System.out.println("Depth reached: " + i);
+			State endMinMaxState = minimax(b, b.turn, i, 0);
+			System.out.println("Final state reached: \n" + endMinMaxState);
+		}
+		
+		System.out.println("");
+		System.out.println("minimax vs αβ");
+		System.out.println("");
 		
 		for (int i=3; i<=13; i++) {
 			System.out.println("Depth reached: " + i);
 			State endMinMaxState = BestWithMinimax(b, b.turn, i);
 			System.out.println("Minimax values");
-			System.out.println("Final state reached: " + endMinMaxState);
+			System.out.println("Final state reached: \n" + endMinMaxState);
 			System.out.println("Nodes visited to reach this state: " + this.nodesVisited + '\n');
 			
 			State endABState = BestWithAlphaBeta(b, b.turn, i);
 			System.out.println("Alpha-beta values");
-			System.out.println("Final state reached: " + endABState);
+			System.out.println("Final state reached: \n" + endABState);
 			System.out.println("Nodes visited to reach this state: " + this.nodesVisited + '\n');
 		}
 		
@@ -113,6 +126,8 @@ public class Game {
 	    
 	    return bestState;
 	}
+	
+	
 	
 	public State alpha_beta(State s, int forAgent, int maxDepth, int depth, double alpha, double beta) {
 		// alpha goes from Double.NEGATIVE_INFINITY
